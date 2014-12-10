@@ -126,7 +126,7 @@
 
 @property (getter = isAnimatingToTab, assign) BOOL animatingToTab;
 @property (getter = isDefaultSetupDone, assign) BOOL defaultSetupDone;
-
+@property BOOL isScrolling;
 // Colors
 @property (nonatomic) UIColor *indicatorColor;
 @property (nonatomic) UIColor *tabsViewBackgroundColor;
@@ -219,10 +219,13 @@
     UIView *tabView = tapGestureRecognizer.view;
     __block NSUInteger index = [self.tabs indexOfObject:tabView];
     
-    //if Tap is not selected Tab(new Tab)
-    if (self.activeTabIndex != index) {
-        // Select the tab
-        [self selectTabAtIndex:index];
+    // If user is not scrolling tabview
+    if (!self.isScrolling) {
+        // If tap is not selected tab (new tab)
+        if (self.activeTabIndex != index) {
+            // Select the tab
+            [self selectTabAtIndex:index];
+        }
     }
 }
 
@@ -745,6 +748,7 @@
     
     self.animatingToTab = NO;
     self.defaultSetupDone = NO;
+    self.isScrolling = NO;
 }
 - (void)defaultSetup {
     
@@ -983,6 +987,7 @@
     }
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    self.isScrolling = YES;
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
         [self.actualDelegate scrollViewWillBeginDragging:scrollView];
     }
@@ -1014,6 +1019,7 @@
     }
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    self.isScrolling = NO;
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [self.actualDelegate scrollViewDidEndDecelerating:scrollView];
     }
